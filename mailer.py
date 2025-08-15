@@ -4,30 +4,35 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 from email.mime.application import MIMEApplication
 import time
+import os
+from dotenv import load_dotenv
 
-SMTP_SERVER = "smtp.gmail.com"
-SMTP_PORT = 587
-EMAIL = "egaleti2003@gmail.com"
-PASSWORD = "bkvp fzal vuvf ysmr"
+load_dotenv()
 
-contatos = pd.read_csv("contatos-teste.csv")
+SMTP_SERVER = os.getenv("SMTP_SERVER")
+SMTP_PORT = int(os.getenv("SMTP_PORT"))
+EMAIL = os.getenv("EMAIL")
+PASSWORD = os.getenv("PASSWORD")
 
-with open("Desenvolvedor_web_Elton_Pt-br.pdf", "rb") as f:
+contatos = pd.read_csv("contatos.csv")
+
+with open("curriculo.pdf", "rb") as f:
     curriculo_pdf = f.read()
-    
+
 for index, row in contatos.iterrows():
-    nome = row["nome"]
+    nomeUsuario = input("Qual seu nome: ")
+    nomeEmpresa = row["nome"]
     destinatario = row["email"]
-    
+
     msg = MIMEMultipart()
     msg["From"] = EMAIL
     msg["To"] = destinatario
     msg["Subject"] = "Oportunidade de trabalho em TI"
-    
-    corpo = f"""
-Olá {nome},
 
-    Meu nome é Elton Eduardo Galeti e gostaria de manifestar meu interesse em integrar a equipe {nome}, atuando como Desenvolvedor ou na área de Suporte de TI.
+    corpo = f"""
+Olá {nomeEmpresa},
+
+Meu nome é {nomeUsuario} e gostaria de manifestar meu interesse em integrar a equipe {nomeEmpresa}, atuando como Desenvolvedor ou na área de Suporte de TI.
 
 Possuo mais de três anos de experiência na área de tecnologia, com sólida atuação no desenvolvimento web (Laravel, Angular, Spring Boot), manutenção de sistemas, diagnóstico e resolução de problemas técnicos. Também tenho experiência com bancos de dados SQL, infraestrutura de TI, Docker, Git/GitHub e boas práticas de segurança da informação.
 
@@ -38,17 +43,21 @@ Segue em anexo meu currículo e carta de apresentação para avaliação.
 Agradeço desde já pela atenção e coloco-me à disposição para entrevistas e esclarecimentos.
 
 Atenciosamente,
-Elton Eduardo Galeti
+{nomeUsuario}
 📧 egaleti2003@gmail.com
 📱 +55 (17) 99218-6552
 🔗 GitHub: https://github.com/EltonGaleti113
 👨 Linkedin: https://www.linkedin.com/in/elton-galeti-6ab11a2a7/
     """
-    
+
     msg.attach(MIMEText(corpo, "plain"))
-    
+
     anexo = MIMEApplication(curriculo_pdf, _subtype="pdf")
-    anexo.add_header("Content-Disposition", "attachment", filename="Desenvolvedor_web_Elton_Pt-br.pdf")
+    anexo.add_header(
+        "Content-Disposition",
+        "attachment",
+        filename="Desenvolvedor_web_Elton_Pt-br.pdf",
+    )
     msg.attach(anexo)
 
     # Envio
@@ -58,4 +67,4 @@ Elton Eduardo Galeti
         server.send_message(msg)
 
     print(f"E-mail enviado para {destinatario}")
-    time.sleep(5)  # Pausa para evitar bloqueio
+    time.sleep(5)
