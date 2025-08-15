@@ -57,3 +57,10 @@ Para executar o script:
 ```bash
 python mailer.py
 ```
+---
+
+## 🛡️ Boas Práticas
+
+Evite enviar mensagens repetitivas diariamente para o mesmo contato para não ser marcado como spam.
+
+
